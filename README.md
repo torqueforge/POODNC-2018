@@ -12,13 +12,13 @@ You will need:
 Clone this repository:
 
 ```bash
-$ git clone git@github.com:torqueforge/$NAME_OF_CLASS.git
+$ git clone git@github.com:torqueforge/POODNC-2018.git
 ```
 
 Change directories so that you are in the project:
 
 ```bash
-$ cd $NAME_OF_CLASS
+$ cd POODNC-2018
 ```
 
 Install the dependencies:
