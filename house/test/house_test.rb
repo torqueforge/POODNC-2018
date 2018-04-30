@@ -11,10 +11,6 @@ class HouseTest < Minitest::Test
   attr_reader :tale
   def setup
     @tale   = CumulativeTale.new(phrases: PhrasesDouble.new)
-
-    # data    = ['1a 1b', '2a 2b', '3a 3b', 'the house that Jack built']
-    # phrases = Phrases.new(list: data)
-    # @tale   = CumulativeTale.new(phrases: phrases)
   end
 
   def test_line_1
@@ -55,10 +51,8 @@ end
 class RandomOrdererTest < Minitest::Test
   def test_lines
    Random.srand(1)
-   data     = ['1a 1b', '2a 2b', '3a 3b', 'the house that Jack built']
-   expected = ["the house that Jack built", "3a 3b", "1a 1b", "2a 2b"]
-  #  data     = [['1a', '1b'], ['2a', '2b'], ['3a', '3b'], ['the house', 'that Jack built']]
-  #  expected = [["the house", "that Jack built"], ["3a", "3b"], ["1a", "1b"], ["2a", "2b"]]
+   data     = [['1a', nil, '1c'], ['2a', '2b', '2c'], ['3a', '3b'], ['the house', 'that Jack built']]
+   expected = [["the house", "that Jack built"], ["3a", "3b"], ["1a", nil, "1c"], ["2a", "2b", "2c"]]
    assert_equal expected, RandomOrderer.new.order(data)
  end
 end
@@ -66,18 +60,34 @@ end
 class FixedLastRandomOrdererTest < Minitest::Test
   def test_lines
    Random.srand(1)
-   data     = ['1a 1b', '2a 2b', '3a 3b', 'the house that Jack built']
-   expected = ["1a 1b", "3a 3b", "2a 2b", "the house that Jack built"]
-  #  data     = [['1a', '1b'], ['2a', '2b'], ['3a', '3b'], ['the house', 'that Jack built']]
-  #  expected = [["1a", "1b"], ["3a", "3b"], ["2a", "2b"], ["the house", "that Jack built"]]
+   data     = [['1a', nil, '1c'], ['2a', '2b', '2c'], ['3a', '3b'], ['the house', 'that Jack built']]
+   expected = [["1a", nil, "1c"], ["3a", "3b"], ["2a", "2b", "2c"], ["the house", "that Jack built"]]
    assert_equal expected, FixedLastRandomOrderer.new.order(data)
  end
 end
 
+class MixedActorActionOrdererTest < Minitest::Test
+  def test_lines
+    Random.srand(1)
+    data     = [['1a', nil, '1c'], ['2a', '2b', '2c'], ['3a', '3b', '3c'], ['the house', nil, 'that Jack built']]
+    expected = [["the house", nil, "that Jack built"], ["3a", "3b", "3c"], ["1a", "2b", "1c"], ["2a", nil, "2c"]]
+    assert_equal expected, MixedActorActionOrderer.new.order(data)
+  end
+end
+
+class FixedLastRightMixedActorActionOrdererTest < Minitest::Test
+  def test_lines
+    Random.srand(1)
+    data     = [['1a', nil, '1c'], ['2a', '2b', '2c'], ['3a', '3b', '3c'], ['the house', nil, 'that Jack built']]
+    expected = [["the house", nil, "1c"], ["3a", "3b", "3c"], ["1a", "2b", "2c"], ["2a", nil, "that Jack built"]]
+    assert_equal expected, FixedLastRightMixedActorActionOrderer.new.order(data)
+  end
+end
+
+
 class UnchangedOrdererTest < Minitest::Test
   def test_lines
-    data     = ['1a 1b', '2a 2b', '3a 3b', 'the house that Jack built']
-    # data     = [['1a', '1b'], ['2a', '2b'], ['3a', '3b'], ['the house', 'that Jack built']]
+    data     = [["1a", nil, "1c"], ["3a", "3b"], ["2a", "2b", "2c"], ["the house", "that Jack built"]]
     expected = data
     assert_equal expected, UnchangedOrderer.new.order(data)
   end
@@ -85,9 +95,8 @@ end
 
 class PhrasesTest < Minitest::Test
   def test_phrases
-    data     = ['1a 1b', '2a 2b', '3a 3b', 'the house that Jack built']
-    # data     = [['1a', '1b'], ['2a', '2b'], ['3a', '3b'], ['the house', 'that Jack built']]
-    expected = data
+    data     = [['1a', '1b'], ['2a', '2b'], ['3a', '3b'], ['the house', 'that Jack built']]
+    expected = ['1a 1b', '2a 2b', '3a 3b', 'the house that Jack built']
     assert_equal expected, Phrases.new(list: data).data
   end
 
