@@ -8,6 +8,13 @@ class SamlIdentityProvider
     return [SamlIdentityProvider.new]
   end
 
+  def self.for_identity_provider_id(idp)
+    result = where(name: idp).first
+    raise ActiveRecord::RecordNotFound unless result
+    result
+  end
+
+
   def deployment_code
     'a deployment_code'
   end
@@ -84,7 +91,17 @@ module ActiveRecord
   end
 end
 
-class StandardResponse
+class Response
+  def self.for(issuer, saml_response_param)
+    if issuer == 'www.healthnet.com:omada'
+      HealthNetSamlResponse.new(saml_response_param)
+    else
+      StandardResponse.new(saml_response_param)
+    end
+  end
+end
+
+class StandardResponse < Response
   attr_reader :settings, :saml_response
 
   def initialize(saml_response)
@@ -111,6 +128,15 @@ class StandardResponse
 
   def attributes
     saml_response
+  end
+
+  def errors
+    begin
+      validate!
+      nil
+    rescue OneLoginSamlValidationError => e
+      e.message
+    end
   end
 end
 
